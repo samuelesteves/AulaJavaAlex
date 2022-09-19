@@ -4,9 +4,9 @@
  */
 package aula06;
 
-import static aula06.Export.CreateTextFile.addRecords;
 import static aula06.Export.CreateTextFile.closeFile;
 import static aula06.Export.CreateTextFile.openFile;
+import static aula06.Export.CreateTextFile.exportar;
 
 /**
  *
@@ -115,8 +115,9 @@ public class telinha extends javax.swing.JFrame {
         String salario = txtSalario.getText();
         
         openFile();
-        addRecords(nome, telefone, email, salario);
+        exportar(nome,telefone,email,salario);
         closeFile();
+        
     }//GEN-LAST:event_btncalcActionPerformed
 
     /**

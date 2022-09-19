@@ -4,6 +4,7 @@ import java.util.Formatter;
 import java.util.FormatterClosedException;
 import java.util.NoSuchElementException;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Formatter;
 import java.util.FormatterClosedException;
 import java.util.NoSuchElementException;
@@ -27,24 +28,23 @@ public class CreateTextFile {
         }
     }
 
-    public static void addRecords(String nome, String telefone, String email, String salario) {
-            
-            try {                               
-                output.format("%d %s %s %.2f%n", nome, 
-                telefone, email, salario);                
-                                
-            } catch (FormatterClosedException formatterClosedException) {
-                System.err.println("Error writing to file. Terminating.");
-                
-            } catch (NoSuchElementException elementException) {
-                System.err.println("Invalid input. Please try again.");
-                
-            }
-            
-            System.out.print("caiu ");
-        } 
         
-          
+    public static void exportar(String nome, String telefone, String email, String salario) {
+        PrintWriter out;
+try {
+    out = new PrintWriter("C:\\Users\\User\\Desktop\\teste\\exer.txt");
+    out.println(nome);
+    out.println(telefone);
+    out.println(email);
+    out.println(salario);
+    out.close();
+} catch (FileNotFoundException e) {
+    System.err.println("File doesn't exist");
+    e.printStackTrace();
+}
+        
+        
+    }
     
 
     public static void closeFile() {
