@@ -1,0 +1,20 @@
+INSERT INTO dbo.seresVivos
+    (reino
+    ,filo
+    ,classe
+    ,ordem
+    ,familia
+    ,genero
+    ,especie
+    ,nomeComum)
+     VALUES
+    (
+    ,?
+    ,?
+    ,?
+    ,?
+    ,?
+    ,?
+    ,?
+    ,?
+    )
