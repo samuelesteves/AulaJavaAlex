@@ -18,14 +18,14 @@ public class Cliente extends Pessoa {
     
     
     public Cliente(int id, String nome, Calendar dataNascimento, String documento, 
-            String telefone, String email, Endereco endereco)
+            String telefone, String email, Endereco endereco, String cartaoFidelidade)
     {
        
         super(id, nome, dataNascimento, documento, telefone, email, endereco);
+        this.cartaoFidelidade = cartaoFidelidade;
               
         
     }
-    
     
     
     

@@ -54,9 +54,9 @@ public class Principal {
             public void run() {
 
                 JanelaPrincipal principal = new JanelaPrincipal();
-                principal.pack();      
+                //  principal.pack();      
 
-                Insets in = Toolkit.getDefaultToolkit().getScreenInsets(principal.getGraphicsConfiguration());
+                /*Insets in = Toolkit.getDefaultToolkit().getScreenInsets(principal.getGraphicsConfiguration());
 
                 Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -64,14 +64,14 @@ public class Principal {
                 int height = d.height - (in.top + in.bottom);
 
                 principal.setSize(width, height);
-                principal.setLocation(in.left, in.top);
+                principal.setLocation(in.left, in.top);*/
 
                 principal.setVisible(true);
 
-                //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                // Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 //double width = screenSize.getWidth();
                 //double height = screenSize.getHeight();
-                //principal.setSize(screenSize);
+                // principal.setSize(screenSize);
                 //new JanelaPrincipal().setVisible(true);
                 //principal.setExtendedState();
             }

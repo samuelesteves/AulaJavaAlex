@@ -7,6 +7,7 @@ package br.com.superreges.view;
 import br.com.superreges.modelo.Cliente;
 import br.com.superreges.modelo.Endereco;
 import br.com.superreges.rdn.ClienteRdn;
+import br.com.superreges.rdn.EnderecoRdn;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,9 +26,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class FrmCliente extends javax.swing.JInternalFrame {
 
-    ClienteRdn clienteRdn = new ClienteRdn();
-    
-    List<Cliente> lstCliente = clienteRdn.obterTodos();
+    ArrayList<Cliente> lstCliente;
 
     boolean modoAlterarDeletar = false;
     int id = 0;
@@ -35,13 +34,13 @@ public class FrmCliente extends javax.swing.JInternalFrame {
 
     public FrmCliente() {
 
-        //lstCliente = new ArrayList<Cliente>();
-        
-        lstCliente = clienteRdn.obterTodos();
-        
+        lstCliente = new ArrayList<Cliente>();
+
         initComponents();
 
         this.modoNovo();
+
+        this.carregarTabela();
     }
 
     @SuppressWarnings("unchecked")
@@ -135,11 +134,11 @@ public class FrmCliente extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "ID", "NOME", "TELEFONE", "NASCIMENTO", "EMAIL", "CARTÃO FIDELIDADE", "LOGRADOURO", "BAIRRO", "CEP", "CIDADE", "COMPLEMENTO", "NÚMERO", "UF"
+                "ID", "NOME", "DOCUMENTO", "TELEFONE", "NASCIMENTO", "EMAIL", "CARTÃO FIDELIDADE", "LOGRADOURO", "BAIRRO", "CEP", "CIDADE", "COMPLEMENTO", "NÚMERO", "UF"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -177,7 +176,7 @@ public class FrmCliente extends javax.swing.JInternalFrame {
 
         jLabel12.setText("UF");
 
-        txtDataNascimento.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT))));
+        txtDataNascimento.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd/MM/yyyy"))));
 
         try {
             txtCep.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##.###-###")));
@@ -291,7 +290,7 @@ public class FrmCliente extends javax.swing.JInternalFrame {
                     .addComponent(jLabel9)
                     .addComponent(txtCep, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -330,6 +329,7 @@ public class FrmCliente extends javax.swing.JInternalFrame {
         txtNumero.setEnabled(false);
         txtUf.setEnabled(false);
 
+        btnSalvar.setText("Salvar");
         //DESABILITAR OS BOTÕES
         btnSalvar.setEnabled(false);
         btnExcluir.setEnabled(false);
@@ -368,9 +368,6 @@ public class FrmCliente extends javax.swing.JInternalFrame {
             Logger.getLogger(FrmCliente.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Endereco endereco = new Endereco(txtRua.getText(), txtCidade.getText(), txtNumero.getText(), txtUf.getText(),
-                txtBairro.getText(), txtCep.getText());
-
         int idCli = 0;
 
         if (this.modoAlterarDeletar == true) {
@@ -380,25 +377,31 @@ public class FrmCliente extends javax.swing.JInternalFrame {
             idCli = 0;
         }
 
-        Cliente cliente = new Cliente(idCli, txtNome.getText(), cal, txtDocumento.getText(), txtTelefone.getText(),
-                txtEmail.getText(), endereco);
+        Endereco endereco = new Endereco(0, txtRua.getText(), txtCidade.getText(), txtNumero.getText(), txtUf.getText(),
+                txtBairro.getText(), txtCep.getText(), idCli);
 
-        this.modoNovo();
+        Cliente cliente = new Cliente(idCli, txtNome.getText(), cal, txtDocumento.getText(), txtTelefone.getText(),
+                txtEmail.getText(), endereco, txtFidelidade.getText());
+
+        ClienteRdn cliRdn = new ClienteRdn();
 
         if (this.modoAlterarDeletar == true) {
+
             //ALTERO O VALOR NA POSIÇÃO DA LISTA
-            lstCliente.set(this.indiceLista, cliente);
+            //lstCliente.set(this.indiceLista, cliente);
+            cliRdn.alterarCliente(cliente);
             btnNovo.setEnabled(true);
 
         } else {
-            lstCliente.add(cliente);
-        }        
-        this.modoAlterarDeletar = false;
-        
-        this.carregarTabela();
-        
-        clienteRdn.inserirCliente(cliente);
+            //lstCliente.add(cliente);            
+            cliRdn.inserirCliente(cliente);
 
+        }
+
+        this.modoAlterarDeletar = false;
+        this.carregarTabela();
+
+        this.modoNovo();
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void tableClienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableClienteMouseClicked
@@ -414,10 +417,11 @@ public class FrmCliente extends javax.swing.JInternalFrame {
         //GUARDA O ID PARA ALTERAR/REMOVER
         this.id = idCliente;
 
-        int indice = 0;
+        //int indice = 0;
+        ClienteRdn rdn = new ClienteRdn();
 
         //RECUPERAR POR ID
-        Cliente cliente = null;
+        Cliente cliente = rdn.obterPorId(id);
 
         /*for (int i = 0; i < lstCliente.size(); i++) {
 
@@ -427,14 +431,13 @@ public class FrmCliente extends javax.swing.JInternalFrame {
                 indice = i;
                 break;
             }
-        }*/
-
-        this.indiceLista = indice;
-
+        }
+        this.indiceLista = indice;*/
         txtNome.setText(cliente.getNome());
         txtEmail.setText(cliente.getEmail());
         txtFidelidade.setText(cliente.getCartaoFidelidade());
         txtTelefone.setText(cliente.getTelefone());
+        txtDocumento.setText(cliente.getDocumento());
 
         //ALTERAR A DATA
         DateFormat formataData = new SimpleDateFormat("dd/MM/yyyy");
@@ -477,14 +480,18 @@ public class FrmCliente extends javax.swing.JInternalFrame {
 
         if (input == 0) {
 
-            lstCliente.remove(this.indiceLista);
+            EnderecoRdn endRdn = new EnderecoRdn();
+
+            endRdn.deletarEnderecoPorPessoa(this.id);
+
+            ClienteRdn rdn = new ClienteRdn();
+
+            rdn.deletarCliente(this.id);
 
             this.carregarTabela();
 
         }
         this.modoNovo();
-        
-        clienteRdn.deletarCliente(indiceLista);
 
     }//GEN-LAST:event_btnExcluirActionPerformed
 
@@ -496,8 +503,12 @@ public class FrmCliente extends javax.swing.JInternalFrame {
         //limpar a tabela antes de selecionar
         model.setRowCount(0);
 
+        ClienteRdn cliRdn = new ClienteRdn();
+
+        List<Cliente> lstCli = cliRdn.obterTodos();
+
         //para cada cliente da lista
-        for (Cliente cli : lstCliente) {
+        for (Cliente cli : lstCli) {
 
             DateFormat formataData = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -505,6 +516,7 @@ public class FrmCliente extends javax.swing.JInternalFrame {
             model.addRow(new Object[]{
                 cli.getId(),
                 cli.getNome(),
+                cli.getDocumento(),
                 cli.getTelefone(),
                 formataData.format(cli.getDataNascimento().getTime()),
                 cli.getEmail(),
